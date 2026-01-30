@@ -1,6 +1,7 @@
+import desc
 import inspect
 import linecache
-import desc
+import numpy as np
 import sys
 import threading
 import time
@@ -10,6 +11,7 @@ def siena_debugger(func):
     def wrapper(*args, **kwargs):
         thread_2 = None
         stop_event = None
+        stack_old = None
 
         """
         Dynamically updates a timer on the screen until `stop_event` is reached
@@ -30,20 +32,31 @@ def siena_debugger(func):
         Its role is to stop the previous timer (if it exists) and start a new 
         one. 
         """
-        def tracer(frame, event, arg):                        
+        def tracer(frame, event, arg):
+            # stop previous if not first loop                        
             nonlocal stop_event, thread_2
-            # nonlocal thread_2
             if stop_event is not None:
                 stop_event.set()
                 thread_2.join()
 
-            # stack = traceback.extract_stack(frame)
+            stack_new = traceback.extract_stack(frame)
             # fmt_trace = traceback.format_list([stack[-1]])[0]
+
+            
+
+            
+            ###### -----------------------------------
+            #TODO: define stacktrace_new = stack
+            # extract filenamestack from old and new stacktrace, if old is None then []
+            # pass to print_tree
+
+            #### ------------------------------------
+
 
             lines, start_line = inspect.getsourcelines(frame.f_code)
             end_line = start_line + len(lines) - 1
 
-            if frame.f_lineno < end_line:
+            if frame.f_lineno < end_line: #set another timer...
                 func_name = frame.f_code.co_name
                 fileloc = frame.f_code.co_filename
                 lineno = frame.f_lineno
@@ -69,5 +82,38 @@ def heavy_lifting():
     # desc.set_device('cpu')
     return z
 
-heavy_lifting()
+# heavy_lifting()
 
+# prints progression through a tree by comparing an old and new stacktrace
+def print_tree(namestack_old, namestack_new):
+    # calculate lengths of the stacks
+    l_old = len(namestack_old)
+    l_new = len(namestack_new)
+
+    # pad the arrays if they're not the same length
+    if l_new > l_old:
+        namestack_old = np.pad(namestack_old, (0, l_new-l_old), mode='constant')
+    elif l_new < l_old:
+        namestack_new = np.pad(namestack_new, (0, l_old-l_new), mode='constant')
+
+    # calculate number of shared nodes
+    n = np.argwhere((namestack_old == namestack_new) == False)[:, 0][0]
+    
+    if n < l_old: # if the tree backtracks
+        print("| " * n + "- " * (l_old - n))
+    if n < l_new: # if the tree forwardtracks
+        i = n
+        while i < l_new:
+            print("| " * i + "* " + namestack_new[i])
+            i += 1
+
+stack0 = []
+stack1 = ["a", "b", "c"]
+stack2 = ["a", "b", "c", "d", "e"]
+stack3 = ["a", "f", "g"]
+stack4 = ["a", "f"]
+
+print_tree(stack0, stack1)
+print_tree(stack1, stack2)
+print_tree(stack2, stack3)
+print_tree(stack3, stack4)

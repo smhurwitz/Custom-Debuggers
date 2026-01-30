@@ -28,7 +28,7 @@ stack trace of a single line which tells us which called what in sequence. Steps
 - Get initial tree or initialize it to like "<module>()" or whatever, eg "file: /Users/sienahurwitz/Documents/Hobbies/Coding/Custom Debuggers/workshop.py; func: <module>()"
 - while new line:
     - get the new tree
-    - if file and/or function has changed from last tree
+    - if file and/or function has changed from last tree or old tree was none
         - x = nodes in common
         - l = length of old tree
         - m = length of new tree
