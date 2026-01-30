@@ -30,23 +30,25 @@ def siena_debugger(func):
         Its role is to stop the previous timer (if it exists) and start a new 
         one. 
         """
-        def tracer(frame, event, arg):
-            lines, start_line = inspect.getsourcelines(frame.f_code)
-            end_line = start_line + len(lines) - 1
-                        
-            nonlocal stop_event
-            nonlocal thread_2
+        def tracer(frame, event, arg):                        
+            nonlocal stop_event, thread_2
+            # nonlocal thread_2
             if stop_event is not None:
                 stop_event.set()
                 thread_2.join()
 
-            stack = traceback.extract_stack(frame)
-            fmt_trace = traceback.format_list([stack[-1]])[0]
-            fileloc, lineno = fmt_trace.split(", in ")[0].split(", line ")
-            premod = f"{fileloc} | Line {lineno}: "
+            # stack = traceback.extract_stack(frame)
+            # fmt_trace = traceback.format_list([stack[-1]])[0]
 
-            stop_event = threading.Event()
+            lines, start_line = inspect.getsourcelines(frame.f_code)
+            end_line = start_line + len(lines) - 1
+
             if frame.f_lineno < end_line:
+                func_name = frame.f_code.co_name
+                fileloc = frame.f_code.co_filename
+                lineno = frame.f_lineno
+                premod = f"{fileloc} | function: {func_name}(); Line {lineno}: "
+                stop_event = threading.Event()
                 thread_2 = threading.Thread(target=timer, args=(stop_event, premod, ))
                 thread_2.start()
             return tracer

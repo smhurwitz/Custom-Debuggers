@@ -14,5 +14,25 @@ the code will print information to the screen in the following format:
 | - -
 | Line 9: 0.59s
 
+Things to add:
+* different color to separate function name from file location
+* different color for file name itself, ie g.txt?
+
 Current bugs:
 * keeps timing if an error is thrown (# desc.set_device('cpu'))
+
+Next steps:
+So, the basic idea is as follows. As seen in "workshop.py", we can get a 
+stack trace of a single line which tells us which called what in sequence. Steps as follows:
+
+- Get initial tree or initialize it to like "<module>()" or whatever, eg "file: /Users/sienahurwitz/Documents/Hobbies/Coding/Custom Debuggers/workshop.py; func: <module>()"
+- while new line:
+    - get the new tree
+    - if file and/or function has changed from last tree
+        - x = nodes in common
+        - l = length of old tree
+        - m = length of new tree
+        - print "| " x times followed by "- " l times to show end of trace
+        - print "| " m times followe by "* " followed by new filename and function
+        - set old tree = new tree
+    - print "| " m times followed by line number followed by dynamic timer
