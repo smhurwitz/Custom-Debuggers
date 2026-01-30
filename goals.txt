@@ -1,0 +1,18 @@
+The goal of this project is to create a debugger that can be used to
+dynamically evaluate how long it takes to run pieces of Python code. Ideally, 
+the code will print information to the screen in the following format:
+
+* File "/Users/sienahurwitz/Documents/Physics/Projects/2024---Islands-Representation/mydebugger.py"
+| Line 1: 0.67s
+| Line 2: 0.59s
+| * File /Users/sienahurwitz/Documents/Physics/Projects/2024---Islands-Representation/whatever.py"....
+| | Line 57: 1.23s
+| | Line 58: 1.23s
+| | * File /Users/sienahurwitz/Documents/Physics/Projects/2024---Islands-Representation/whatever2.py"....
+| | | Line 57: 1.23s
+| | | Line 58: 1.23s
+| - -
+| Line 9: 0.59s
+
+Current bugs:
+* keeps timing if an error is thrown (# desc.set_device('cpu'))
