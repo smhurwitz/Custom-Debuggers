@@ -11,7 +11,7 @@ import webbrowser
 
 
 
-def siena_debugger(threshold=1):
+def siena_debugger(threshold=0):
     """
     This decorator is intended to be used as a debugging tool. It will print
     out the name of each function called in the primary thread, along with
@@ -26,14 +26,23 @@ def siena_debugger(threshold=1):
 
     """
     def decorator(func):
+        # base of the stack we want, e.g. "/Users/.../file.py method()"
+        entry_pt = f"{os.path.abspath(inspect.getfile(func))} {func.__name__}()"
+
         def wrapper(*args, **kwargs):
-            nonlocal threshold
+            nonlocal threshold, entry_pt
             thread_2 = None
             stop_event = None
+            stop_time = None
             stack_old = None
 
+            # exclues all the frames below the entry point into the stack
+            def trim_namestack(namestack):
+                idx = np.where(namestack == entry_pt)[0][0]
+                return namestack[idx:]
+
             # prints progression through a tree by comparing an old and new stacktrace
-            def print_tree(namestack_old, namestack_new):
+            def print_tree(namestack_old, namestack_new):                
                 # calculate lengths of the stacks
                 l_old = len(namestack_old)
                 l_new = len(namestack_new)
@@ -60,17 +69,21 @@ def siena_debugger(threshold=1):
             in the primary thread. 
             """
             def timer(stop_event, premodifier):
-                start = time.perf_counter()
+                nonlocal stop_time
+                start = time.perf_counter() if stop_time is None else stop_time
                 while not stop_event.is_set():
                     elapsed = time.perf_counter() - start
                     sys.stdout.write(f"\r{premodifier} Elapsed time: {elapsed:.2f}s ")
                     sys.stdout.flush()
-                    time.sleep(0.1)
+                    time.sleep(0.05)
+                stop_time = time.perf_counter()
                 if elapsed < threshold:
                     sys.stdout.write("\033[1K\r") # clear line + carriage return
                     sys.stdout.flush()
                 else:
-                    print()   
+                    print("")   
+                sys.stdout.write("\033[1K\r") # for some reason timer ocassionally won't update unless this is here
+                sys.stdout.flush()
             
             """
             This function is called by sys.settrace(tracer) each time and 
@@ -79,33 +92,28 @@ def siena_debugger(threshold=1):
             one. 
             """
             def tracer(frame, event, arg):
-                # stop previous if not first loop                        
+                # stop previous if not first loop                       
                 nonlocal stop_event, thread_2
                 if stop_event is not None:
                     stop_event.set()
                     thread_2.join()
                 
-                ###### -----------------------------------
                 nonlocal stack_old
                 stack_new = traceback.extract_stack(frame)
 
-                #TODO 2) extract filenamesstacks for old and new; if old is None then []
                 if stack_old is None:
                     filesstack_old = np.array([""])
                 else:
                     filesstack_old = np.array([f"{f.filename} {f.name}()" for f in stack_old])
+                    filesstack_old = trim_namestack(filesstack_old) #trim stack to entry point
                 filesstack_new = np.array([f"{f.filename} {f.name}()" for f in stack_new])
-
-                #TODO 3) pass to print_tree
+                filesstack_new = trim_namestack(filesstack_new)
                 print_tree(filesstack_old, filesstack_new)
-
                 stack_old = stack_new
-                #### ------------------------------------
 
 
                 lines, start_line = inspect.getsourcelines(frame.f_code)
                 end_line = start_line + len(lines) - 1
-
                 if frame.f_lineno < end_line: #set another timer...
                     lineno = frame.f_lineno
                     premod = "| " * len(filesstack_new) + f"Line {lineno}: "

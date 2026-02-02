@@ -31,3 +31,6 @@ General todo:
 2) test on complex code!! 
 
 talk about how i'm using this: https://github.com/evanhempel/python-flamegraph
+
+
+***SET START TIME TO LAST STOP TIME
