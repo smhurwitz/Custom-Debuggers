@@ -7,8 +7,8 @@ import flamegraph
 
 import time
 
-# @siena_debugger
-@flamegraphss(output_dir="./demo/outputs/")
+@siena_debugger()
+# @flamegraph_debugger(output_dir="./demo/outputs/")
 def heavy_lifting():
     x = 10
     time.sleep(4.9) # Simulate a slow operation
