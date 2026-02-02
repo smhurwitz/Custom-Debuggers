@@ -14,11 +14,23 @@ the code will print information to the screen in the following format:
 | - -
 | Line 9: 0.59s
 
-Things to add:
+Things to add to my debugger:
 * take as an argument "mintime" that will delete any lines that are less than a certian amount of time!!!
 * different color to separate function name from file location
 * different color for file name itself, ie g.txt?
 
-Todo then:
+Todo thenfor my debgger:
 1) take as an argument "mintime" that will delete any lines that are less than a certian amount of time!!!
 2) make demo
+
+Things to add to flame debugger:
+1) option to just save file or load it
+2) browser option
+3) flamegraphloc
+title
+
+General todo:
+1) make a readme!! 
+2) test on complex code!! 
+
+talk about how i'm using this: https://github.com/evanhempel/python-flamegraph

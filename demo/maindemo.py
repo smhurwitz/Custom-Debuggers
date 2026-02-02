@@ -1,12 +1,14 @@
 import sys
 sys.path.append("/Users/sienahurwitz/Documents/Hobbies/Coding/Custom Debuggers/")
-from debugger import siena_debugger
+from debugger import *
 from other.hey import abc
 import numpy as np
+import flamegraph
 
 import time
 
-@siena_debugger
+# @siena_debugger
+@flamegraphss
 def heavy_lifting():
     x = 10
     time.sleep(4.9) # Simulate a slow operation
@@ -23,6 +25,7 @@ def heavy_lifting():
 
 def g():
     time.sleep(1.2)
+    x = np.array([1, 2, 3])
     return 0
 
 def h():
@@ -32,4 +35,5 @@ def h():
 def l():
     return "haha"
 
+# flamegraph.start_profile_thread(fd=open("./perf.log", "w"))
 heavy_lifting()

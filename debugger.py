@@ -1,9 +1,13 @@
+import flamegraph
 import inspect
 import numpy as np
+import os
+import subprocess
 import sys
 import threading
 import time
 import traceback
+import webbrowser
 
 def siena_debugger(func):
     def wrapper(*args, **kwargs):
@@ -95,4 +99,36 @@ def print_tree(namestack_old, namestack_new):
         while i < l_new:
             print("| " * i + "* " + namestack_new[i])
             i += 1
+
+def flamegraphss(func):
+    def wrapper(*args, **kwargs):
+        saveloc = "./"
+        savename = "perf.log"
+        flamegraphloc = "/Users/sienahurwitz/Documents/Physics/Codes/flamegraph.pl"
+        title = "title!!"
+        brows = "safari"
+
+        profile_thread = flamegraph.start_profile_thread(fd=open(saveloc + savename, "w"))
+        result = func(*args, **kwargs)
+        profile_thread.stop()
+
+        with open("perf.svg", "w") as output_file:
+            # 3. Run the command and pipe the output to the file
+            subprocess.run([flamegraphloc, "--title", title, "perf.log"], stdout=output_file, check=True)
+        
+        file_path = os.path.abspath("perf.svg")
+        url = f"file://{file_path}"
+
+        try:
+            # 2. Specifically request Safari
+            browser = webbrowser.get(brows)
+            browser.open(url)
+        except webbrowser.Error:
+            # Fallback if Safari is not found/registered for some reason
+            webbrowser.open(url)
+
+        return result
+    return wrapper
+
+
 
