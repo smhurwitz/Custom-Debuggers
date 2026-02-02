@@ -24,10 +24,7 @@ Todo thenfor my debgger:
 2) make demo
 
 Things to add to flame debugger:
-1) option to just save file or load it
-2) browser option
-3) flamegraphloc
-title
+
 
 General todo:
 1) make a readme!! 

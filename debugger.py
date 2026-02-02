@@ -100,35 +100,40 @@ def print_tree(namestack_old, namestack_new):
             print("| " * i + "* " + namestack_new[i])
             i += 1
 
-def flamegraphss(func):
-    def wrapper(*args, **kwargs):
-        saveloc = "./"
-        savename = "perf.log"
-        flamegraphloc = "/Users/sienahurwitz/Documents/Physics/Codes/flamegraph.pl"
-        title = "title!!"
-        brows = "safari"
+def flamegraphss(plot_title=None, 
+                 show=True,
+                 output_stem="flamegraph",
+                 output_dir="./", 
+                 browser="safari",
+                 fg_loc="/Users/sienahurwitz/Documents/Physics/Codes/flamegraph.pl"):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            nonlocal plot_title, output_dir, output_stem, browser, fg_loc, show
+            # run the function and log timing
+            log_filename = output_dir + output_stem + ".log"
+            profile_thread = flamegraph.start_profile_thread(fd=open(log_filename, "w"))
+            result = func(*args, **kwargs)
+            profile_thread.stop()
 
-        profile_thread = flamegraph.start_profile_thread(fd=open(saveloc + savename, "w"))
-        result = func(*args, **kwargs)
-        profile_thread.stop()
+            # analyze results, save as SVG, and delete log file
+            plot_title = " " if plot_title is None else plot_title
+            svg_filename = output_dir + output_stem + ".svg"
+            with open(svg_filename, "w") as output_file:
+                subprocess.run([fg_loc, "--title", plot_title, log_filename], stdout=output_file, check=True)
+            os.remove(log_filename)
 
-        with open("perf.svg", "w") as output_file:
-            # 3. Run the command and pipe the output to the file
-            subprocess.run([flamegraphloc, "--title", title, "perf.log"], stdout=output_file, check=True)
-        
-        file_path = os.path.abspath("perf.svg")
-        url = f"file://{file_path}"
+            # open the SVG in a browser
+            if show:
+                url = f"file://{os.path.abspath(svg_filename)}"
+                try:
+                    browser = webbrowser.get(browser)
+                    browser.open(url)
+                except webbrowser.Error:
+                    webbrowser.open(url)
 
-        try:
-            # 2. Specifically request Safari
-            browser = webbrowser.get(brows)
-            browser.open(url)
-        except webbrowser.Error:
-            # Fallback if Safari is not found/registered for some reason
-            webbrowser.open(url)
-
-        return result
-    return wrapper
+            return result
+        return wrapper
+    return decorator
 
 
 

@@ -1,14 +1,14 @@
 import sys
 sys.path.append("/Users/sienahurwitz/Documents/Hobbies/Coding/Custom Debuggers/")
 from debugger import *
-from other.hey import abc
+from hidden.hey import abc
 import numpy as np
 import flamegraph
 
 import time
 
 # @siena_debugger
-@flamegraphss
+@flamegraphss(output_dir="./demo/outputs/")
 def heavy_lifting():
     x = 10
     time.sleep(4.9) # Simulate a slow operation
