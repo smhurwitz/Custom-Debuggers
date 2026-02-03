@@ -11,7 +11,7 @@ import webbrowser
 
 
 
-def siena_debugger(threshold=0):
+def homebrew_debugger(threshold=0):
     """
     This decorator is intended to be used as a debugging tool. It will print
     out the name of each function called in the primary thread, along with

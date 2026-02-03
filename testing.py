@@ -1,11 +1,10 @@
 import time
-from debugger import siena_debugger
+from debugger import homebrew_debugger
 import sys
 import numpy as np
 
-
-@siena_debugger(threshold=1)
-def less_complicated():
+@homebrew_debugger(threshold)
+def complicated():
     a = 1
     nestc()
     b = 2
@@ -29,4 +28,4 @@ def nestc():
     nestb()
     time.sleep(1.33)
 
-less_complicated()
+complicated()

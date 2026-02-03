@@ -7,7 +7,7 @@ import flamegraph
 
 import time
 
-@siena_debugger()
+@homebrew_debugger()
 # @flamegraph_debugger()
 def heavy_lifting():
     x = 10
