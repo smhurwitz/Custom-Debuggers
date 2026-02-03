@@ -104,7 +104,11 @@ Another nice aspect of this decorator is that it displays the nesting of various
 | Line 17:  Elapsed time: 0.31s 
 ```
 
-todos:
+## Flame Graph
+The `@flamegraph_debugger()` uses a [Python implementation](https://github.com/evanhempel/python-flamegraph) of the [Flame Graph](https://www.brendangregg.com/flamegraphs.html) stack trace visualization tool which displays stack depth on the vertical axis and CPU cycles (or various other types of cycles) on the horizontal axis. For example, adding this decorator to `complicated()` would give the following.
 
-4) talk about how i'm using this: https://github.com/evanhempel/python-flamegraph
-5) make public! 
+![Alt text](./controllers_brief.svg)
+<img src="./controllers_brief.svg">
+
+
+A more complicated Flame Graph example from the original website is shown [here](https://www.brendangregg.com/FlameGraphs/cpu-mysql-updated.svg)
