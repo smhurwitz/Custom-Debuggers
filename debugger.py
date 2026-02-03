@@ -10,7 +10,6 @@ import traceback
 import webbrowser
 
 
-
 def homebrew_debugger(threshold=0):
     """
     This decorator is intended to be used as a debugging tool. It will print
