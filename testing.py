@@ -1,9 +1,9 @@
 import time
-from debugger import homebrew_debugger
+from debugger import homebrew_debugger, flamegraph_debugger
 import sys
 import numpy as np
 
-@homebrew_debugger(threshold)
+@flamegraph_debugger()
 def complicated():
     a = 1
     nestc()
